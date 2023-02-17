@@ -13,9 +13,12 @@ df_emissions_total = df_emissions_total.pivot(index="Country", columns="Year", v
 
 df_emissions_percapita = df_emissions.drop('Total', axis=1)
 df_emissions_percapita = df_emissions_percapita.pivot(index="Country", columns="Year", values="Per Capita").reset_index()
-print(df_pop)
-
-
+#print(df_gdp.values[:,0] == df_pop.values[:,0])
+#print(df_emissions_percapita.values[:,0] == df_emissions_total.values[:,0])
+print(df_gdp.values[:,0])
+print(df_emissions_percapita.values[:,0])
+dic_country = df_emissions_percapita.values[:,0]
+#print(dic_country)
 #print(df_gdp.values[:,0] == df_pop.values[:,0])
 
 
