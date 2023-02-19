@@ -1,9 +1,21 @@
+import argparse
 import numpy as np
 import pandas as pd
 from nypd.dict import get_dict
 
+def load_files():
+    parser = argparse.ArgumentParser()
+    parser.add_argument("GDP", help="gdp file to be read")
+    parser.add_argument("Population", help="population file to be read")
+    parser.add_argument("Emissions", help="emissions file to be read")
+    return parser.parse_args()
+
+def get_data(args):
+    return pd.read_csv(args.GDP, sep=',', header=[2]),  pd.read_csv(args.Population, sep = ',', header=[2]), \
+            pd.read_csv(args.Emissions, sep = ',')
+
 def adjustData(df_gdp, df_pop, df_emissions, years):
-    assert len(years) != 0
+    assert len(years) != 0, "Podano nieprawidłowy przedział lat"
     df_gdp = df_gdp.rename(columns={'Country Name': 'Country'})
     df_pop = df_pop.rename(columns={'Country Name': 'Country'})
     #df_emissions = df_emissions.drop(['Solid Fuel', 'Liquid Fuel', 'Gas Fuel',
@@ -25,9 +37,6 @@ def getYears(gdp, pop, emissions, minYear, maxYear):
             years.append(str(i))
     return years
 
-def cleanData():
-    return False
-
 def mergeData(gdp, pop, emissions):
     assert 'Country' in gdp.columns, "Tabela GDP nie zawiera kolumny 'Country'"
     assert 'Country' in pop.columns, "Tabela Population nie zawiera kolumny 'Country'"
@@ -45,8 +54,11 @@ def mergeData(gdp, pop, emissions):
             emissions.at[index, "Country"] = countries[row["Country"]]
     tab1 = np.setdiff1d(np.unique(data["Country"]), np.unique(emissions["Country"]))
     tab2 = np.setdiff1d(np.unique(emissions["Country"]), np.unique(data["Country"]))
-    print(f"Kraje, które nie występują w tabeli Emissions: {tab1}")
-    print(f"Kraje, które nie wystęoują w tabeli GDP/Population: {tab2}")
+    #print(f"Kraje, które nie występują w tabeli Emissions: {tab1}")
+    #print(f"Kraje, które nie wystęoują w tabeli GDP/Population: {tab2}")
     data = data.astype({"Year": "int64"})
     data = pd.merge(data, emissions, on=("Country", "Year"))
+
+    data["GDP_per_capita"] = data["GDP"] / data["Population"]
+
     return data
