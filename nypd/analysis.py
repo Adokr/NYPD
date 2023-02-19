@@ -1,6 +1,3 @@
-import numpy as np
-import pandas as pd
-
 def max_CO2_percapita(data):
     assert "Per Capita" in data.columns, "Tabela nie zawiera kolumny 'Per Capita'"
     data =  data.groupby(["Year"]).apply(lambda x: x.nlargest(5, "Per Capita"))[["Country", "Per Capita", "Total"]]
@@ -15,7 +12,9 @@ def max_GDP_percapita(data):
 
 def max_change_in_CO2_emissions(data):
     assert "Per Capita" in data.columns, "Tabela nie zawiera kolumny 'Per Capita'"
+    assert max(data["Year"]) - min(data["Year"]) > 8, "Wybrano przedział czasowy krótszy niż 10 lat"
     maxYear = max(data["Year"])
+
     data = data.query(f"Year == {maxYear} or Year == {maxYear-9}")
     data = data.pivot(index="Country", columns="Year")
     data = data.rename_axis(("Stat", "Year"), axis=1)

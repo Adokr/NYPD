@@ -8,18 +8,18 @@ def load_files():
     parser.add_argument("GDP", help="gdp file to be read")
     parser.add_argument("Population", help="population file to be read")
     parser.add_argument("Emissions", help="emissions file to be read")
+    parser.add_argument("Min", help="first year")
+    parser.add_argument("Max", help="last year")
     return parser.parse_args()
 
 def get_data(args):
     return pd.read_csv(args.GDP, sep=',', header=[2]),  pd.read_csv(args.Population, sep = ',', header=[2]), \
-            pd.read_csv(args.Emissions, sep = ',')
+            pd.read_csv(args.Emissions, sep = ','), args.Min, args.Max
 
 def adjustData(df_gdp, df_pop, df_emissions, years):
     assert len(years) != 0, "Podano nieprawidłowy przedział lat"
     df_gdp = df_gdp.rename(columns={'Country Name': 'Country'})
     df_pop = df_pop.rename(columns={'Country Name': 'Country'})
-    #df_emissions = df_emissions.drop(['Solid Fuel', 'Liquid Fuel', 'Gas Fuel',
-                                      #'Cement', 'Gas Flaring', 'Bunker fuels (Not in Total)'], axis=1)
     df_gdp = pd.DataFrame(df_gdp[["Country"] + years])
     df_pop = pd.DataFrame(df_pop[["Country"] + years])
     df_emissions = pd.DataFrame(df_emissions[df_emissions.Year.astype(str).isin(years)])
@@ -29,8 +29,8 @@ def getYears(gdp, pop, emissions, minYear, maxYear):
     years_gdp = gdp.columns[4:-1].astype("int64")
     years_pop = pop.columns[4:-1].astype("int64")
     years_emissions = list(np.unique(emissions.Year))
-    minRange = max(min(years_gdp), min(years_pop), min(years_emissions), minYear)
-    maxRange = min(max(years_gdp), max(years_pop), max(years_emissions), maxYear)
+    minRange = max(min(years_gdp), min(years_pop), min(years_emissions), int(minYear))
+    maxRange = min(max(years_gdp), max(years_pop), max(years_emissions), int(maxYear))
 
     for i in range(minRange, maxRange + 1):
         if (i in years_gdp and i in years_pop and i in years_emissions):
