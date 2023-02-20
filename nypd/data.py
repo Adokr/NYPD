@@ -17,7 +17,9 @@ def get_data(args):
             pd.read_csv(args.Emissions, sep = ','), args.Min, args.Max
 
 def adjustData(df_gdp, df_pop, df_emissions, years):
-    assert len(years) != 0, "Podano nieprawidłowy przedział lat"
+    assert 'Country Name' in df_gdp.columns, "Tabela GDP nie zawiera kolumny 'Country Name'"
+    assert 'Country Name' in df_pop.columns, "Tabela Population nie zawiera kolumny 'Country Name'"
+    assert len(years) != 0, "Brak pełnych danych dla podanych lat"
     df_gdp = df_gdp.rename(columns={'Country Name': 'Country'})
     df_pop = df_pop.rename(columns={'Country Name': 'Country'})
     df_gdp = pd.DataFrame(df_gdp[["Country"] + years])
@@ -25,6 +27,8 @@ def adjustData(df_gdp, df_pop, df_emissions, years):
     df_emissions = pd.DataFrame(df_emissions[df_emissions.Year.astype(str).isin(years)])
     return df_gdp, df_pop, df_emissions
 def getYears(gdp, pop, emissions, minYear, maxYear):
+    assert isinstance(minYear, int) and isinstance(maxYear, int), "Lata muszą być liczbami"
+    assert minYear < maxYear, "Podano nieprawidłowy przedział lat"
     years = []
     years_gdp = gdp.columns[4:-1].astype("int64")
     years_pop = pop.columns[4:-1].astype("int64")
@@ -54,11 +58,11 @@ def mergeData(gdp, pop, emissions):
             emissions.at[index, "Country"] = countries[row["Country"]]
     tab1 = np.setdiff1d(np.unique(data["Country"]), np.unique(emissions["Country"]))
     tab2 = np.setdiff1d(np.unique(emissions["Country"]), np.unique(data["Country"]))
-    #print(f"Kraje, które nie występują w tabeli Emissions: {tab1}")
-    #print(f"Kraje, które nie wystęoują w tabeli GDP/Population: {tab2}")
+    print(f"Kraje, które nie występują w tabeli Emissions: {tab1}")
+    print(f"Kraje, które nie wystęoują w tabeli GDP/Population: {tab2}")
+
     data = data.astype({"Year": "int64"})
     data = pd.merge(data, emissions, on=("Country", "Year"))
-
     data["GDP_per_capita"] = data["GDP"] / data["Population"]
 
     return data
