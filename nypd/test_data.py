@@ -3,12 +3,12 @@ import pandas as pd
 import pytest
 from nypd import data
 
-@pytest.mark.parametrize("minYear, maxYear", [(2000, 1999), (1960, 1959)])
+@pytest.mark.parametrize("minYear, maxYear", [("2000", "1999"), ("1960", "1959")])
 def test_get_years1(minYear, maxYear):
     with pytest.raises(AssertionError, match="Podano nieprawidłowy przedział lat"):
         data.getYears(None, None, None, minYear, maxYear)
 
-@pytest.mark.parametrize("minYear, maxYear", [(2000, "aa"), ("aaa", 1959)])
+@pytest.mark.parametrize("minYear, maxYear", [("2000", "aa"), ("aaa", "1959")])
 def test_get_years2(minYear, maxYear):
     with pytest.raises(AssertionError, match="Lata muszą być liczbami"):
         data.getYears(None, None, None, minYear, maxYear)

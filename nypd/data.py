@@ -27,8 +27,8 @@ def adjustData(df_gdp, df_pop, df_emissions, years):
     df_emissions = pd.DataFrame(df_emissions[df_emissions.Year.astype(str).isin(years)])
     return df_gdp, df_pop, df_emissions
 def getYears(gdp, pop, emissions, minYear, maxYear):
-    assert isinstance(minYear, int) and isinstance(maxYear, int), "Lata muszą być liczbami"
-    assert minYear < maxYear, "Podano nieprawidłowy przedział lat"
+    assert minYear.isnumeric() and maxYear.isnumeric(), "Lata muszą być liczbami"
+    assert int(minYear) < int(maxYear), "Podano nieprawidłowy przedział lat"
     years = []
     years_gdp = gdp.columns[4:-1].astype("int64")
     years_pop = pop.columns[4:-1].astype("int64")
