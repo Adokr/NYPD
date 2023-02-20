@@ -12,6 +12,7 @@ def max_GDP_percapita(data):
 
 def max_change_in_CO2_emissions(data):
     assert "Per Capita" in data.columns, "Tabela nie zawiera kolumny 'Per Capita'"
+    assert "Year" in data.columns, "Tabela nie zawiera kolumny 'Year'"
     assert max(data["Year"]) - min(data["Year"]) > 8, "Wybrano przedział czasowy krótszy niż 10 lat"
     maxYear = max(data["Year"])
 
